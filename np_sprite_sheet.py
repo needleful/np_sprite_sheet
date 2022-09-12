@@ -1,8 +1,7 @@
 from krita import *
+import json
 import math
 import os.path
-
-#TODO: JSON export
 
 def generate_file(app):
 	activeDoc = app.activeDocument()
@@ -10,17 +9,54 @@ def generate_file(app):
 	frame_width = activeDoc.width()
 	frame_height = activeDoc.height()
 
+	properties = {
+		"framerate":activeDoc.framesPerSecond(),
+	}
+	anims = {}
+
 	frames = []
 	for layer in activeDoc.topLevelNodes():
 		if layer.animated():
+			anims[layer.name()] = {
+				"offset":len(frames),
+				"key_times":[]
+			}
+			last_frame = 0
+			total_frames = 0
 			for frame in range(activeDoc.animationLength()):
 				if layer.hasKeyframeAtTime(frame):
 					frames.append(layer.pixelDataAtTime(0, 0, frame_width, frame_height, frame))
+					total_frames += 1
+					if total_frames > 1:
+						anims[layer.name()]["key_times"].append(frame - last_frame)
+					last_frame = frame
+			# By default, the last keyframe is held for 1 frame.
+			# Use +[number] in the name of the layer to add a final keyframe time
+			anims[layer.name()]["key_times"].append(1)
+
 		else:
+			anims[layer.name()] = {
+				"offset":len(frames),
+				"key_times":[1]
+			}
 			frames.append(layer.projectionPixelData(0, 0, frame_width, frame_height))
 
+	for key in list(anims):
+		values = key.split('+')
+		if len(values) == 2:
+			anim = values[0]
+			anims[anim] = anims[key]
+			del anims[key]
+			added = int(values[1])
+			key_times = anims[anim]["key_times"]
+			key_times[len(key_times) - 1] += added
+
+	properties['anims'] = anims
+	
 	columns = int(math.sqrt(len(frames)))
 	rows = int(math.ceil(len(frames)/columns))
+
+	properties['size'] = [rows, columns]
 
 	exportDoc = app.createDocument(
 		frame_width*columns, frame_height*rows,
@@ -47,7 +83,7 @@ def generate_file(app):
 			if not res:
 				print("Failed to paste at (%d, %d)" % (x, y))
 
-	return exportDoc, None
+	return exportDoc, properties
 
 
 def export_spritesheet(output_path):
@@ -60,6 +96,13 @@ def export_spritesheet(output_path):
 	png.setProperty("indexed", False)
 	exportDoc.refreshProjection()
 	exportDoc.exportImage(os.path.join(output_path), png)
+
+	if properties != None:
+		json_path = os.path.splitext(output_path)[0] + '.ss.json'
+		with open(json_path, "w", encoding="utf-8") as json_out:
+			json.dump(properties, json_out, sort_keys=True)
+
+
 
 def preview_spritesheet():
 	app = Krita.instance()
