@@ -6,19 +6,19 @@
 <head><title>NP Sprite Sheet</title>
 </head>
 <body>
-<h3>NP Sprite Sheet</h3>
+<h1>NP Sprite Sheet</h1>
 Convert animations to sprite sheets easily!
 <h3>Usage</h3>
-Create different animations as separate layers.
-Then, press "export" and choose where to save the file.
-The plugin will export to where you've chosen and save "[filename].ss.json" along with it.
+Create different animations as separate layers.<br/>
+Then, press "export" and choose where to save the file.<br/>
+The plugin will export to where you've chosen and save "[filename].ss.json" along with it.<br/>
 The JSON file describes each animation for loading into other programs.
 It contains the following data:
 <ul>
 	<li>anims: an object mapping the names of each animation to objects with these values:
 		<ul>
-			<li>offset: the starting frame, going left to right, top to bottom. The frames of the animation are in sequential order.  <em>Important note:</em> the last frame will only be held for 1 frame, as the size of an animation is determine per document, not per layer, and can't be used to determine the correct value. To hold the final frame longer, add "+X" to the end of the layer's name, replacing "X" with the amount of holding frames to add.</li>
-			<li>key_times: the number of frames to hold each keyframe until switching to the next.</li>
+			<li>offset: the starting frame, going left to right, top to bottom. The frames of the animation are in sequential order. </li>
+			<li>key_times: the number of frames to hold each keyframe until switching to the next. <br/><em>Important note:</em> the last frame will only be held for 1 frame, as the size of an animation is determine per document, not per layer, and can't be used to determine the correct value. To hold the final frame longer, add "+X" to the end of the layer's name, replacing "X" with the amount of holding frames to add.</li>
 		</ul>
 	</li>
 	<li>framerate: the frames per second as an integer</li>
