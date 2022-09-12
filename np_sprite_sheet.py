@@ -1,12 +1,10 @@
 from krita import *
 import math
+import os.path
 
 #TODO: JSON export
 
-def export_spritesheet():
-	print("NP Spritesheet")
-
-	app = Krita.instance()
+def generate_file(app):
 	activeDoc = app.activeDocument()
 
 	frame_width = activeDoc.width()
@@ -48,6 +46,24 @@ def export_spritesheet():
 			res = exportLayer.setPixelData(frameData, x, y, frame_width, frame_height)
 			if not res:
 				print("Failed to paste at (%d, %d)" % (x, y))
+
+	return exportDoc, None
+
+
+def export_spritesheet(output_path):
+	app = Krita.instance()
+	exportDoc, properties = generate_file(app)
+
+	png = InfoObject()
+	png.setProperty("alpha", True)
+	png.setProperty("compression",9)
+	png.setProperty("indexed", False)
+	exportDoc.refreshProjection()
+	exportDoc.exportImage(os.path.join(output_path), png)
+
+def preview_spritesheet():
+	app = Krita.instance()
+	exportDoc, properties = generate_file(app)
 
 	app.activeWindow().addView(exportDoc)
 	exportDoc.refreshProjection()
