@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=Krita/PythonPlugin
+X-KDE-Library=np_sprite_sheet
+X-Python-2-Compatible=false
+X-Krita-Manual=Manual.html
+Name=np_sprite_sheet
+Comment=needleful's practical sprite sheet exporter
